@@ -11,12 +11,16 @@ import sys
 import os
 import datetime
 
-
-def setup_logging(program_name, console_level=logging.INFO, file_level=logging.DEBUG):
+def setup_logging(program_name, log_folder, console_level=logging.INFO, file_level=logging.DEBUG):
     logger = logging.getLogger(program_name)
     logger.setLevel(file_level)
     # create file handler which logs even debug messages
-    fh = logging.FileHandler('{:%Y%m%d}_{}.log'.format(datetime.datetime.now(), program_name))
+    fh = logging.FileHandler(
+        os.path.join(
+            log_folder,
+            '{:%Y%m%d}_{}.log'.format(datetime.datetime.now(), program_name)
+        )
+    )
     fh.setLevel(file_level)
     # create console handler with a higher log level
     ch = logging.StreamHandler()
@@ -37,7 +41,12 @@ if __name__ == "__main__" :
         description="Decription of the program"
     )
 
-    logger = setup_logging(program_name)
+    parser.add_argument("-l", "--logs_dir", help="logs directory", default=".")
+
+    args = parser.parse_args()
+
+    logger = setup_logging(program_name, args.logs_dir)
+
     logger.info("START")
 
     logger.info("DONE")
